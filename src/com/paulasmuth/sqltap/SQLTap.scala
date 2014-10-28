@@ -1,5 +1,5 @@
 // This file is part of the "SQLTap" project
-//   (c) 2011-2013 Paul Asmuth <paul@paulasmuth.com>
+//   (c) 2014 Paul Asmuth, Google Inc. <asmuth@google.com>
 //
 // Licensed under the MIT License (the "License"); you may not use this
 // file except in compliance with the License. You may obtain a copy of
@@ -111,7 +111,6 @@ object SQLTap{
     Manifest.load(new File(Config.get('config_base)))
     RelationTrace.load(Manifest.resources)
     ExpirationHandlerFactory.configure(Config.get('expiration_handler))
-    ReplicationFeed.start()
 
     val server = new Server(Config.get('threads).toInt)
     server.run(Config.get('http_port).toInt)
