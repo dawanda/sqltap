@@ -72,6 +72,9 @@ object SQLTap{
       else if (args(n) == "--disable-keepalive")
         { Config.set('http_keepalive, "false"); n += 1 }
 
+      else if (args(n) == "--log-slow-queries")
+        { Config.set('log_slow_queries, args(n+1)); n += 2 }
+
       else if ((args(n) == "-t") || (args(n) == "--threads"))
         { Config.set('threads, args(n+1)); n += 2 }
 
@@ -138,6 +141,7 @@ object SQLTap{
     println("  --memcache-queuelen    <num>     max mysql queue size per worker              ")
     println("  --memcache-numconns    <num>     max number of mysql connections per worker   ")
     println("  --memcache-mode        <name>    replication mode (copy, shard)               ")
+    println("  --log-slow-queries     <millis>  log all queries with a runtime > val in ms   ")
     println("  -h, --help                       you're reading it...                         ")
     println("  -d, --debug                      debug mode                                   ")
   }
