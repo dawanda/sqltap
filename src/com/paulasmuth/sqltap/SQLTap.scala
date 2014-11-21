@@ -57,9 +57,6 @@ object SQLTap{
       else if (args(n) == "--cache-backend")
         { Config.set('cache_backend, args(n+1)); n += 2 }
 
-      else if (args(n) == "--memcache-hosts")
-        { Config.set('memcache_hosts, args(n+1)); n += 2 }
-
       else if (args(n) == "--memcache-mode")
         { Config.set('memcache_mode, args(n+1)); n += 2 }
 
@@ -74,6 +71,12 @@ object SQLTap{
 
       else if (args(n) == "--log-slow-queries")
         { Config.set('log_slow_queries, args(n+1)); n += 2 }
+
+      else if (args(n) == "--memcache-host")
+      { Config.set('memcache_host, args(n+1)); n += 2 }
+
+      else if (args(n) == "--memcache-port")
+      { Config.set('memcache_port, args(n+1)); n += 2 }
 
       else if ((args(n) == "-t") || (args(n) == "--threads"))
         { Config.set('threads, args(n+1)); n += 2 }
@@ -136,7 +139,8 @@ object SQLTap{
     println("  --mysql-numconns       <num>     max number of mysql connections per worker   ")
     println("  --expiration-handler   <name>    expiration handler (noop, purge, refresh)    ")
     println("  --cache-backend        <name>    cache backend (memcache)                     ")
-    println("  --memcache-hosts       <addrs>   comma-seperated memcache servers (host:port) ")
+    println("  --memcache-host       <addrs>    memcache server host                         ")
+    println("  --memcache-port       <num>      memcache server port                         ")
     println("  --memcache-queuelen    <num>     max mysql queue size per worker              ")
     println("  --memcache-numconns    <num>     max number of mysql connections per worker   ")
     println("  --memcache-mode        <name>    replication mode (copy, shard)               ")

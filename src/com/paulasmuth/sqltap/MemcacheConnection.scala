@@ -12,10 +12,7 @@ import java.nio.channels.{SocketChannel,SelectionKey}
 import java.nio.{ByteBuffer,ByteOrder}
 import java.net.{InetSocketAddress,ConnectException}
 
-class MemcacheConnection(pool: MemcacheConnectionPool) extends TimeoutCallback {
-
-  var hostname  : String  = "127.0.0.1"
-  var port      : Int     = 11211
+class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port : Int) extends TimeoutCallback {
 
   private val MC_STATE_INIT       = 0
   private val MC_STATE_CONN       = 1
