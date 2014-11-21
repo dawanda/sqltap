@@ -108,7 +108,9 @@ class MemcacheConnectionPool extends CacheBackend {
   }
 
   private def connect() : Unit = {
-    val conn = new MemcacheConnection(this)
+    val port: Int = Config.get('memcache_port).toInt
+    val host: String = Config.get('memcache_host)
+    val conn = new MemcacheConnection(this, host, port)
 
     conn.connect()
     connections += conn

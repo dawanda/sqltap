@@ -24,6 +24,8 @@ object Config {
     'memcache_mode            -> "copy",
     'memcache_queue_max_len   -> "4096",
     'memcache_max_connections -> "10",
+    'memcache_host            -> "127.0.0.1",
+    'memcache_port            -> "11211",
     'threads                  -> "4",
     'expiration_handler       -> "purge",
     'cache_backend            -> "memcache"
