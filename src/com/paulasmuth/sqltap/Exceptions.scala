@@ -7,6 +7,8 @@
 
 package com.paulasmuth.sqltap
 
+import com.paulasmuth.sqltap.instructions.Instruction
+
 class ParseException(msg: String) extends Exception {
   override def toString = msg
 }
