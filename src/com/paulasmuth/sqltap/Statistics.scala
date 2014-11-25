@@ -7,6 +7,9 @@
 
 package com.paulasmuth.sqltap
 
+import com.paulasmuth.sqltap.stats.StatsdFactory
+import com.typesafe.config.ConfigFactory
+
 object Statistics {
 
   private val stats = Map[Symbol, Statistic](
@@ -28,12 +31,16 @@ object Statistics {
 
   private var last_update = System.nanoTime
 
+  val statsDclient = StatsdFactory(ConfigFactory.load())
+
   def incr(key: Symbol, value: Double = 1.0) : Unit = {
     stats(key).incr(value)
+    statsDclient.inc(key.toString, value.toInt)
   }
 
   def decr(key: Symbol, value: Double = 1.0) : Unit = {
     stats(key).decr(value)
+    statsDclient.dec(key.toString, value.toInt)
   }
 
   def get() : Map[String, String] = {
