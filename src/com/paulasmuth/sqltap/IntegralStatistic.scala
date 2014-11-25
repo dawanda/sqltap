@@ -25,8 +25,8 @@ class IntegralStatistic extends Statistic {
     value.get().toString
   }
 
-  def flush(f: Double) : Unit = {
-    // do nothing
+  def flush(f: Double) : Double = {
+    value.get()
   }
 
 }

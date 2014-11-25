@@ -31,7 +31,7 @@ class MeanStatistic extends Statistic {
     format.format(value)
   }
 
-  def flush(f: Double) : Unit = {
+  def flush(f: Double) : Double = {
     val c = count.get()
 
     if (c == 0)
@@ -42,6 +42,8 @@ class MeanStatistic extends Statistic {
 
     count.set(0)
     sum.set(0)
+
+   value
   }
 
 }
