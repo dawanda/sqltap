@@ -35,12 +35,10 @@ object Statistics {
 
   def incr(key: Symbol, value: Double = 1.0) : Unit = {
     stats(key).incr(value)
-    statsDclient.inc(key.toString, value.toInt)
   }
 
   def decr(key: Symbol, value: Double = 1.0) : Unit = {
     stats(key).decr(value)
-    statsDclient.dec(key.toString, value.toInt)
   }
 
   def get() : Map[String, String] = {
@@ -52,7 +50,10 @@ object Statistics {
       override def run() : Unit = {
         while (true) {
           val time = System.nanoTime - last_update
-          stats.foreach(_._2.flush(time / 1000000000.0))
+          stats.foreach{ st =>
+            val value = st._2.flush(time / 1000000000.0)
+            statsDclient.gauge(st._1.toString, value.toInt)
+          }
           last_update = System.nanoTime
           Thread.sleep(1000)
         }

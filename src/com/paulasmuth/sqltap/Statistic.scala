@@ -9,7 +9,7 @@ package com.paulasmuth.sqltap
 
 trait Statistic {
   def get() : String
-  def flush(f: Double) : Unit
+  def flush(f: Double) : Double
   def incr(value: Double) : Unit
   def decr(value: Double) : Unit
 }

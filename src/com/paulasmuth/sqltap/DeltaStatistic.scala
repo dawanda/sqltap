@@ -28,8 +28,9 @@ class DeltaStatistic extends Statistic {
     format.format(value)
   }
 
-  def flush(f: Double) : Unit = {
+  def flush(f: Double) : Double = {
     value = bucket.getAndSet(0) / f
+    value
   }
 
 }
