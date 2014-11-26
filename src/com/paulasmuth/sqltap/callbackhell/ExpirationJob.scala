@@ -7,9 +7,10 @@
 
 package com.paulasmuth.sqltap.callbackhell
 
-import com.paulasmuth.sqltap.Logger
 import com.paulasmuth.sqltap.ctree.CTree
 import com.paulasmuth.sqltap.sqlmapping.{Record, RelationTrace}
+
+import com.typesafe.scalalogging.StrictLogging
 
 /**
  * When a "record" is expired, an expiration job is created for every CTree
@@ -17,7 +18,7 @@ import com.paulasmuth.sqltap.sqlmapping.{Record, RelationTrace}
  * least once with just the record id, but might be executed a second time with
  * a full record if it depends on keys other than the primary record id.
  */
-class ExpirationJob(worker: Worker, ctree: CTree) extends ReadyCallback[Record]  {
+class ExpirationJob(worker: Worker, ctree: CTree) extends ReadyCallback[Record] with StrictLogging  {
 
   /**
    * Holds all possible (unevaluated) keys for this ctree as (field, cond) tuples.
@@ -41,7 +42,7 @@ class ExpirationJob(worker: Worker, ctree: CTree) extends ReadyCallback[Record] 
   def execute(record_id: Int) : Unit = {
     val primary_id = ctree.resource.id_field
 
-    Logger.debug(
+    logger.debug(
       "[EXPIRE] resource '" + ctree.resource_name + "' with id #" +
       record_id.toString + " expired (1/2)")
 
@@ -62,7 +63,7 @@ class ExpirationJob(worker: Worker, ctree: CTree) extends ReadyCallback[Record] 
    * @param record the full record
    */
   def execute(record: Record) : Unit = {
-    Logger.debug(
+    logger.debug(
       "[EXPIRE] resource '" + record.resource.name + "' with id #" +
       record.id.toString + " expired (2/2)")
 

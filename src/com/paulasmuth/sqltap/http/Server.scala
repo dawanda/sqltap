@@ -10,14 +10,13 @@ package com.paulasmuth.sqltap.http
 import java.net.InetSocketAddress
 import java.nio.channels.spi.SelectorProvider
 import java.nio.channels.{SelectionKey, ServerSocketChannel}
-
 import com.paulasmuth.sqltap.callbackhell.Worker
 import com.paulasmuth.sqltap.stats.Statistics
-import com.paulasmuth.sqltap.{Logger, Watchdog}
+import com.paulasmuth.sqltap.{Watchdog}
+import com.typesafe.scalalogging.StrictLogging
+import scala.collection.mutable.{ListBuffer}
 
-import scala.collection.mutable.ListBuffer
-
-class Server(num_workers : Int) {
+class Server(num_workers : Int) extends StrictLogging {
 
   private val TICK = 500
   var workers = new ListBuffer[Worker]()
@@ -42,8 +41,7 @@ class Server(num_workers : Int) {
         watchdog.run()
       } catch {
         case e: Exception => {
-          Logger.error("error running watchdog: " + e.toString, false)
-          Logger.exception(e, false)
+          logger.error("error running watchdog: " + e.toString, e)
         }
       }
 
@@ -55,7 +53,7 @@ class Server(num_workers : Int) {
           events.remove()
         }
       } else {
-        Logger.log("[CRITICAL] no workers available, sleeping for 500ms")
+        logger.info("[CRITICAL] no workers available, sleeping for 500ms")
         Thread.sleep(500)
       }
     }

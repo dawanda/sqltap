@@ -12,10 +12,12 @@ import com.paulasmuth.sqltap.buffers.ElasticBuffer
 import com.paulasmuth.sqltap.http.JSONWriter
 import com.paulasmuth.sqltap.instructions.Query
 import com.paulasmuth.sqltap.sqlmapping.SQLHelper
+import java.nio.{ByteBuffer}
+import com.typesafe.scalalogging.StrictLogging
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ListBuffer}
 
-class Request(callback: ReadyCallback[Request]) extends ReadyCallback[Query] {
+class Request(callback: ReadyCallback[Request]) extends ReadyCallback[Query] with StrictLogging {
 
   val buffer = new ElasticBuffer(65536)
   val json_stream = new JSONWriter(buffer)
@@ -57,7 +59,7 @@ class Request(callback: ReadyCallback[Request]) extends ReadyCallback[Query] {
 
   private def finished() : Unit = {
     if (Config.debug)
-      Logger.debug("Request finished (" +
+      logger.debug("Request finished (" +
         (((System.nanoTime - stime) / 100000) / 10.0) + "ms): ...")
 
     callback.ready(this)
@@ -71,7 +73,7 @@ class Request(callback: ReadyCallback[Request]) extends ReadyCallback[Query] {
     val exception = new ExecutionException(err.toString)
 
     // FIXPAUL: kill all running queries
-    Logger.exception(err, false)
+    logger.error(err.getMessage, err)
 
     if (callback != null)
       callback.error(this, exception)

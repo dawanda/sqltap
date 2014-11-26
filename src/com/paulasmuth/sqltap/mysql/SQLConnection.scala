@@ -7,15 +7,18 @@
 
 package com.paulasmuth.sqltap.mysql
 
+
 import com.paulasmuth.sqltap.callbackhell.{TimeoutCallback, TimeoutScheduler}
 import com.paulasmuth.sqltap.stats.Statistics
-import com.paulasmuth.sqltap.{Logger,ExecutionException}
+import com.paulasmuth.sqltap.{ExecutionException}
+
+import com.typesafe.scalalogging.StrictLogging
 import scala.collection.mutable.{ListBuffer,HashMap}
 import java.nio.channels.{SocketChannel,SelectionKey}
 import java.nio.{ByteBuffer,ByteOrder}
 import java.net.{InetSocketAddress,ConnectException}
 
-class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
+class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback with StrictLogging {
   var hostname  : String  = "127.0.0.1"
   var port      : Int     = 3306
   var username  : String  = "root"
@@ -91,7 +94,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
       sock.finishConnect
     } catch {
       case e: ConnectException => {
-        Logger.error("[SQL] connection failed: " + e.toString, false)
+        logger.error("[SQL] connection failed: " + e.toString)
         return close(e)
       }
     }
@@ -110,7 +113,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
     val chunk = sock.read(read_buf)
 
     if (chunk <= 0) {
-      Logger.error("[SQL] read end of file ", false)
+      logger.error("[SQL] read end of file ")
       close(new ExecutionException("sql connection closed"))
       return
     }
@@ -124,7 +127,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
         cur_seq  = BinaryInteger.read(read_buf.array, 3, 1)
 
         if (cur_len == SQL_MAX_PKT_LEN) {
-          Logger.error("[SQL] packets > 16mb are currently not supported", false)
+          logger.error("[SQL] packets > 16mb are currently not supported")
           return close(new ExecutionException(
             "sql packets > 16mb are currently not supported"))
         }
@@ -147,7 +150,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
         next(event, pkt)
       } catch {
         case e: SQLProtocolError => {
-          Logger.error("[SQL] protocol error: " + e.toString, false)
+          logger.error("[SQL] protocol error: " + e.toString)
           return close(e)
         }
       }
@@ -162,7 +165,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
       sock.write(write_buf)
     } catch {
       case e: Exception => {
-        Logger.error("[SQL] conn error: " + e.toString, false)
+        logger.error("[SQL] conn error: " + e.toString)
         return close(e)
       }
     }
@@ -198,7 +201,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
     heartbeat.reset()
   } catch {
     case e: Exception => {
-      Logger.error("[SQL] error running timeout: " + e, false)
+      logger.error("[SQL] error running timeout: " + e)
       close(e)
     }
   }
@@ -236,7 +239,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
       throw new SQLProtocolError("connection busy")
     }
 
-    Logger.debug("Execute: COM_BINLOG_DUMP")
+    logger.debug("Execute: COM_BINLOG_DUMP")
     write_packet(new BinlogDumpPacket(42, file, position)) // FIXPAUL server id
 
     last_event.interestOps(SelectionKey.OP_WRITE)
@@ -267,7 +270,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
 
     case SQL_STATE_ACK => {
       if (pkt.size == 1 && (pkt(0) & 0x000000ff) == 0xfe) {
-        Logger.debug("[SQL] switching to mysql old authentication")
+        logger.debug("[SQL] switching to mysql old authentication")
 
         state = SQL_STATE_OLDAUTH
         authenticate()
@@ -275,7 +278,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
 
         event.interestOps(SelectionKey.OP_WRITE)
       } else {
-        Logger.error("received invalid packet in SQL_STATE_ACK", false)
+        logger.error("received invalid packet in SQL_STATE_ACK")
       }
     }
 
@@ -325,12 +328,12 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
     }
 
     case SQL_STATE_ACK => {
-      Logger.debug("[SQL] connection established!")
+      logger.debug("[SQL] connection established!")
       init_session(event)
     }
 
     case SQL_STATE_SINIT => {
-      Logger.debug("[SQL] connection ready")
+      logger.debug("[SQL] connection ready")
       idle(event)
     }
 
@@ -370,7 +373,7 @@ class SQLConnection(pool: AbstractSQLConnectionPool) extends TimeoutCallback {
     val err_msg  = BinaryString.read(pkt, 9, pkt.size - 9)
     val err_code = BinaryInteger.read(pkt, 0, 2)
 
-    Logger.error("[SQL] error (" + err_code + "): " + err_msg, false)
+    logger.error("[SQL] error (" + err_code + "): " + err_msg)
 
     close(new ExecutionException(
       "SQL error (" + err_code + "): " + err_msg))

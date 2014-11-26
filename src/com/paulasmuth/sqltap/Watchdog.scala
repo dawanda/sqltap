@@ -9,8 +9,9 @@ package com.paulasmuth.sqltap
 
 import com.paulasmuth.sqltap.callbackhell.Worker
 import com.paulasmuth.sqltap.http.Server
+import com.typesafe.scalalogging.StrictLogging
 
-class Watchdog(base: Server) {
+class Watchdog(base: Server) extends StrictLogging {
 
   val max_error_rate = 0.3
 
@@ -57,7 +58,7 @@ class Watchdog(base: Server) {
   }
 
   def kill(worker: Worker, reason: String) : Unit = {
-    Logger.error("[WATCHDOG] killing worker: " + reason, false)
+    logger.error("[WATCHDOG] killing worker: " + reason)
     worker.kill()
     base.workers -= worker
   }

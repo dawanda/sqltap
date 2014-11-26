@@ -7,12 +7,12 @@
 
 package com.paulasmuth.sqltap.ctree
 
-import com.paulasmuth.sqltap.Logger
 import com.paulasmuth.sqltap.instructions.Instruction
-
 import scala.collection.mutable.{HashMap, ListBuffer}
+import com.typesafe.scalalogging.StrictLogging
+import scala.collection.mutable.{HashMap,ListBuffer}
 
-object CTreeIndex {
+object CTreeIndex extends StrictLogging {
 
   val ctrees = new HashMap[String, ListBuffer[CTree]]
 
@@ -38,7 +38,7 @@ object CTreeIndex {
       var (score, cost) = ctree.compare(root)
       score += ctree.base_score
 
-      Logger.debug("CTree: evaluating candidate: '" + ctree.name +
+      logger.debug("CTree: evaluating candidate: '" + ctree.name +
        "' (score: " + score + ", cost: " + cost + ") for: " + root.resource_name)
 
       var matches = (cost == 0 && winner_cost > 0)
@@ -53,7 +53,7 @@ object CTreeIndex {
     }
 
     if (winner != null)
-      Logger.debug("CTree: using ctree '" + winner.name + "'")
+      logger.debug("CTree: using ctree '" + winner.name + "'")
 
     if (winner == null)
       None

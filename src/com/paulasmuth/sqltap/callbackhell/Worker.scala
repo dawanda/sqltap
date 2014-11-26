@@ -15,9 +15,11 @@ import java.util.concurrent.atomic.AtomicInteger
 import com.paulasmuth.sqltap.cache.{CacheAdapter, CacheBackendFactory, MemcacheConnection}
 import com.paulasmuth.sqltap.http.HTTPConnection
 import com.paulasmuth.sqltap.mysql.SQLConnectionPool
-import com.paulasmuth.sqltap.{Config, Logger, mysql}
+import com.paulasmuth.sqltap.{Config, mysql}
 
-class Worker() extends Thread {
+import com.typesafe.scalalogging.StrictLogging
+
+class Worker() extends Thread with StrictLogging {
 
   private val TICK = 50
 
@@ -31,11 +33,11 @@ class Worker() extends Thread {
   val sql_pool = new SQLConnectionPool(Config.get(), loop)
   val cache    = new CacheAdapter(CacheBackendFactory.get(this))
 
-  Logger.log("worker starting...")
+  logger.info("worker starting...")
 
   override def run : Unit = while (true) {
     if (!running) {
-      Logger.log("worker exiting...")
+      logger.info("worker exiting...")
       return
     }
 
@@ -45,8 +47,7 @@ class Worker() extends Thread {
       TimeoutScheduler.run()
     } catch {
       case e: Exception => {
-        Logger.error("exception while running timeouts", false)
-        Logger.exception(e, false)
+        logger.error("exception while running timeouts", e)
       }
     }
 
@@ -85,8 +86,7 @@ class Worker() extends Thread {
 
         } catch {
           case e: Exception => {
-            Logger.error("[SQL] exception: " + e.toString, false)
-            Logger.exception(e, false)
+            logger.error("[SQL] exception: " + e.toString, e)
             conn.close(e)
           }
         }
@@ -104,8 +104,7 @@ class Worker() extends Thread {
 
         } catch {
           case e: Exception => {
-            Logger.error("[Memcache] exception: " + e.toString, false)
-            Logger.exception(e, false)
+            logger.error("[Memcache] exception: " + e.toString, e)
             conn.close(e)
           }
         }

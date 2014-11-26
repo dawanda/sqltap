@@ -8,11 +8,11 @@
 package com.paulasmuth.sqltap.cache
 
 import com.paulasmuth.sqltap.stats.Statistics
-import com.paulasmuth.sqltap.{Config, Logger, TemporaryException}
+import com.paulasmuth.sqltap.{Config, TemporaryException}
+import com.typesafe.scalalogging.StrictLogging
+import scala.collection.mutable.{ListBuffer}
 
-import scala.collection.mutable.ListBuffer
-
-class MemcacheConnectionPool extends CacheBackend {
+class MemcacheConnectionPool extends CacheBackend with StrictLogging {
 
   val MEMCACHE_BATCH_SIZE = 10
 
@@ -31,8 +31,8 @@ class MemcacheConnectionPool extends CacheBackend {
     if (queue.length >= max_queue_len) {
       requests.foreach(_.ready())
 
-      Logger.exception(
-        new TemporaryException("memcache queue is full"), false)
+      logger.error("memcache queue is full",
+        new TemporaryException("memcache queue is full"))
 
       return
     }
@@ -94,7 +94,7 @@ class MemcacheConnectionPool extends CacheBackend {
       batch += req
     }
 
-    Logger.debug("[Memcache] mget: " + keys.mkString(", "))
+    logger.debug("[Memcache] mget: " + keys.mkString(", "))
     conn.execute_mget(keys.toList, batch.toList)
 
     execute_next()
@@ -123,12 +123,12 @@ class MemcacheConnectionPool extends CacheBackend {
     req match {
 
       case set: CacheStoreRequest => {
-        Logger.debug("[Memcache] store: " + req.key)
+        logger.debug("[Memcache] store: " + req.key)
         connection.execute_set(req.key, set)
       }
 
       case purge: CachePurgeRequest => {
-        Logger.debug("[Memcache] delete: " + req.key)
+        logger.debug("[Memcache] delete: " + req.key)
         connection.execute_delete(purge.key)
       }
 

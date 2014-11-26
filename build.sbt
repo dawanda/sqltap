@@ -21,3 +21,5 @@ fork in run := true
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.2"
 
 libraryDependencies += "com.typesafe" % "config" % "1.2.0"
+
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
