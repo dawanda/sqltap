@@ -7,13 +7,12 @@
 
 package com.paulasmuth.sqltap.cache
 
-import com.paulasmuth.sqltap.Logger
 import com.paulasmuth.sqltap.buffers.ElasticBuffer
-
-import scala.collection.mutable.HashMap
+import com.typesafe.scalalogging.StrictLogging
+import scala.collection.mutable.{HashMap}
 
 // STUB!
-class StubCache extends CacheBackend {
+class StubCache extends CacheBackend with StrictLogging {
 
   val stubcache = new HashMap[String,ElasticBuffer]()
 
@@ -23,7 +22,7 @@ class StubCache extends CacheBackend {
     for (req <- requests) {
       req match {
         case get: CacheGetRequest => {
-          Logger.debug("[CACHE] retrieve: " + req.key)
+          logger.debug("[CACHE] retrieve: " + req.key)
           stubcache.get(req.key) match {
             case Some(buf:  ElasticBuffer) => {
               get.buffer = buf.clone()
@@ -32,11 +31,11 @@ class StubCache extends CacheBackend {
           }
         }
         case set: CacheStoreRequest => {
-          Logger.debug("[CACHE] store: " + req.key)
+          logger.debug("[CACHE] store: " + req.key)
           stubcache.put(req.key, set.buffer)
         }
         case purge: CachePurgeRequest => {
-          Logger.debug("[CACHE] purge: " + req.key)
+          logger.debug("[CACHE] purge: " + req.key)
           stubcache.remove(req.key)
         }
       }

@@ -15,7 +15,9 @@ import com.paulasmuth.sqltap.callbackhell._
 import com.paulasmuth.sqltap.ctree.CTreeCache
 import com.paulasmuth.sqltap.stats.Statistics
 
-class HTTPConnection(sock: SocketChannel, worker: Worker) extends ReadyCallback[Request] with TimeoutCallback {
+import com.typesafe.scalalogging.StrictLogging
+
+class HTTPConnection(sock: SocketChannel, worker: Worker) extends ReadyCallback[Request] with TimeoutCallback with StrictLogging {
 
   private val HTTP_STATE_INIT  = 1
   private val HTTP_STATE_EXEC  = 2
@@ -86,7 +88,7 @@ class HTTPConnection(sock: SocketChannel, worker: Worker) extends ReadyCallback[
       }
     } catch {
       case e: Exception => {
-        Logger.error("[HTTP] conn error: " + e.toString, false)
+        logger.error("[HTTP] conn error: " + e.toString)
         return close()
       }
     }
@@ -118,8 +120,7 @@ class HTTPConnection(sock: SocketChannel, worker: Worker) extends ReadyCallback[
       http_error(503, e.toString)
 
     case e: Exception => {
-      Logger.error("[HTTP] exception: " + e.toString, false)
-      Logger.exception(e, false)
+      logger.error("[HTTP] exception: " + e.toString, e)
       close()
     }
   }
@@ -314,7 +315,7 @@ class HTTPConnection(sock: SocketChannel, worker: Worker) extends ReadyCallback[
 
     if (Config.has_key('log_slow_queries) &&
         runtime_millis >= Config.get('log_slow_queries).toInt) {
-      Logger.log("[HTTP] [Slow Query] (" + runtime_millis + "ms): " + last_uri)
+      logger.info("[HTTP] [Slow Query] (" + runtime_millis + "ms): " + last_uri)
     }
 
     if (!keepalive)

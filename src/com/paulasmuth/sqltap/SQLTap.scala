@@ -13,6 +13,7 @@ import com.paulasmuth.sqltap.callbackhell.ExpirationHandlerFactory
 import com.paulasmuth.sqltap.http.Server
 import com.paulasmuth.sqltap.sqlmapping.RelationTrace
 import com.paulasmuth.sqltap.stats.Statistics
+import com.typesafe.scalalogging.StrictLogging
 
 // TODO
 //   > todo: use object pool for ByteBuffer.allocate slabs in ElasticBuffer
@@ -23,7 +24,7 @@ import com.paulasmuth.sqltap.stats.Statistics
 //   > bug: SELECT users.`facebook_url` FROM users WHERE `id` = 1 ORDER BY id DESC; crashes
 //   > better error messages for invalid query strings
 
-object SQLTap{
+object SQLTap extends StrictLogging {
 
   val VERSION = "v0.7.19"
 
@@ -103,7 +104,7 @@ object SQLTap{
     }
 
     if (!Config.has_key('config_base)) {
-      Logger.log("--config required")
+      logger.info("--config required")
       println()
 
       return usage(true)
@@ -113,7 +114,7 @@ object SQLTap{
   }
 
   def boot() : Unit = try {
-    Logger.log("sqltapd " + VERSION + " booting...")
+    logger.info("sqltapd " + VERSION + " booting...")
 
     Statistics.update_async()
     sqlmapping.Manifest.load(new File(Config.get('config_base)))
@@ -123,7 +124,7 @@ object SQLTap{
     val server = new Server(Config.get('threads).toInt)
     server.run(Config.get('http_port).toInt)
   } catch {
-    case e: Exception => Logger.exception(e, true)
+    case e: Exception => logger.error(e.getMessage, e); System.exit(1)
   }
 
   def usage(head: Boolean = true) = {

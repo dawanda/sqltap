@@ -7,13 +7,12 @@
 
 package com.paulasmuth.sqltap.sqlmapping
 
-import com.paulasmuth.sqltap._
 import com.paulasmuth.sqltap.callbackhell.{ReadyCallback, Worker}
-import com.paulasmuth.sqltap.mysql.SQLQuery
+import com.typesafe.scalalogging.StrictLogging
+import scala.collection.mutable.{ListBuffer}
+import com.paulasmuth.sqltap.mysql.{SQLQuery}
 
-import scala.collection.mutable.ListBuffer
-
-class RecordLookupJob(worker: Worker, resource: ResourceManifest) extends ReadyCallback[SQLQuery] {
+class RecordLookupJob(worker: Worker, resource: ResourceManifest) extends ReadyCallback[SQLQuery] with StrictLogging{
 
   private val callbacks = new ListBuffer[ReadyCallback[Record]]()
 
@@ -47,7 +46,7 @@ class RecordLookupJob(worker: Worker, resource: ResourceManifest) extends ReadyC
   }
 
   def error(qry: SQLQuery, err: Throwable) : Unit = {
-    Logger.exception(err, false)
+    logger.error(err.getMessage, err)
   }
 
 }

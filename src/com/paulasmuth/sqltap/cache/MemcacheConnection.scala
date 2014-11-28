@@ -7,16 +7,20 @@
 
 package com.paulasmuth.sqltap.cache
 
-import java.net.{ConnectException, InetSocketAddress}
-import java.nio.channels.{SelectionKey, SocketChannel}
-import java.nio.{ByteBuffer, ByteOrder}
+
 
 import com.paulasmuth.sqltap._
 import com.paulasmuth.sqltap.buffers.ElasticBuffer
 import com.paulasmuth.sqltap.callbackhell.{TimeoutCallback, TimeoutScheduler}
 import com.paulasmuth.sqltap.stats.Statistics
+import com.typesafe.scalalogging.StrictLogging
 
-class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port : Int) extends TimeoutCallback {
+import scala.collection.mutable.{ListBuffer}
+import java.nio.channels.{SocketChannel,SelectionKey}
+import java.nio.{ByteBuffer,ByteOrder}
+import java.net.{InetSocketAddress,ConnectException}
+
+class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port : Int) extends TimeoutCallback with StrictLogging {
 
   private val MC_STATE_INIT       = 0
   private val MC_STATE_CONN       = 1
@@ -140,7 +144,7 @@ class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port :
       sock.finishConnect
     } catch {
       case e: ConnectException => {
-        Logger.error("[Memcache] connection failed: " + e.toString, false)
+        logger.error("[Memcache] connection failed: " + e.toString)
         return close(e)
       }
     }
@@ -152,7 +156,7 @@ class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port :
     val chunk = sock.read(read_buf)
 
     if (chunk <= 0) {
-      Logger.error("[Memcache] read end of file ", false)
+      logger.error("[Memcache] read end of file ")
       close(new ExecutionException("memcache connection closed"))
       return
     }
@@ -185,7 +189,7 @@ class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port :
     }
 
     if (cur < read_buf.position) {
-      println("READ REMAINING")
+      logger.debug("READ REMAINING")
       read_buf.limit(read_buf.position)
       read_buf.position(cur)
       read_buf.compact()
@@ -199,7 +203,7 @@ class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port :
       sock.write(write_buf)
     } catch {
       case e: Exception => {
-        Logger.error("[Memcache] conn error: " + e.toString, false)
+        logger.error("[Memcache] conn error: " + e.toString)
         return close(e)
       }
     }
@@ -222,7 +226,7 @@ class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port :
       }
     } catch {
       case e: Exception => {
-        Logger.exception(e, false)
+        logger.error(e.getMessage, e)
       }
     }
 
@@ -234,7 +238,7 @@ class MemcacheConnection(pool: MemcacheConnectionPool, hostname : String, port :
   }
 
   def timeout() : Unit = {
-    Logger.error("[Memcache] connection timed out...", false)
+    logger.error("[Memcache] connection timed out...")
     close()
   }
 

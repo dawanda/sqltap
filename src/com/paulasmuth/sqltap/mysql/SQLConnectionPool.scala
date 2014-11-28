@@ -7,11 +7,12 @@
 
 package com.paulasmuth.sqltap.mysql
 
+
 import com.paulasmuth.sqltap.stats.Statistics
-import com.paulasmuth.sqltap.{Logger,TemporaryException}
+
+import com.paulasmuth.sqltap.{TemporaryException}
 import java.nio.channels.{Selector}
 import scala.collection.mutable.ListBuffer
-import scala.collection.mutable.HashMap
 
 class SQLConnectionPool(config: Map[Symbol,String], _loop: Selector) extends AbstractSQLConnectionPool {
 

@@ -11,10 +11,10 @@ import com.paulasmuth.sqltap._
 import com.paulasmuth.sqltap.callbackhell.Worker
 import com.paulasmuth.sqltap.ctree.CTreeCache
 import com.paulasmuth.sqltap.sqlmapping.{Manifest, ResourceRelation, Record}
-
+import com.typesafe.scalalogging.StrictLogging
 import scala.collection.mutable.ListBuffer
 
-trait Instruction {
+trait Instruction extends StrictLogging {
 
   var next          = ListBuffer[Instruction]()
   var prev          : Instruction = null
@@ -79,7 +79,7 @@ trait Instruction {
   }
 
   def inspect(lvl: Int = 0) : Unit = {
-    Logger.debug((" " * (lvl*2)) + "> name: " + name + ", args: [" +
+    logger.debug((" " * (lvl*2)) + "> name: " + name + ", args: [" +
       (if (args != null && args.size > 0) args.mkString(", ") else "none") + "]")
 
     for (ins <- next)

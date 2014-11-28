@@ -8,11 +8,11 @@
 package com.paulasmuth.sqltap.sqlmapping
 
 import com.paulasmuth.sqltap.ctree.CTree
-import com.paulasmuth.sqltap.{Config, Logger}
+import com.paulasmuth.sqltap.{Config}
+import com.typesafe.scalalogging.StrictLogging
+import scala.collection.mutable.{HashMap}
 
-import scala.collection.mutable.HashMap
-
-object Manifest {
+object Manifest extends StrictLogging {
 
   private val manifest  = HashMap[String,ResourceManifest]()
   private val table_map = HashMap[String,String]()
@@ -63,14 +63,14 @@ object Manifest {
 
       for (elem <- resources) {
         val resource = new ResourceManifest(elem)
-        Logger.debug("Loading resource: " + resource.name)
+        logger.debug("Loading resource: " + resource.name)
         table_map += ((resource.table_name, resource.name))
         manifest  += ((resource.name, resource))
       }
 
       for (elem <- ctrees) {
         val ctree = new CTree(elem)
-        Logger.debug("Loading ctree: " + ctree.name)
+        logger.debug("Loading ctree: " + ctree.name)
       }
     }
 

@@ -9,9 +9,10 @@ package com.paulasmuth.sqltap.mysql
 import com.paulasmuth.sqltap._
 import com.paulasmuth.sqltap.callbackhell.{ReadyCallback, Timeout, TimeoutCallback, TimeoutScheduler}
 import com.paulasmuth.sqltap.stats.Statistics
+import com.typesafe.scalalogging.StrictLogging
 import scala.collection.mutable.ListBuffer
 
-class SQLQuery(query_str: String) extends TimeoutCallback {
+class SQLQuery(query_str: String) extends TimeoutCallback with StrictLogging {
   var running  = true
   val query    : String = query_str
   var columns  = new ListBuffer[String]()
@@ -27,7 +28,7 @@ class SQLQuery(query_str: String) extends TimeoutCallback {
   def start() : Unit = {
     tik = System.nanoTime
 
-    Logger.debug("Execute: " + query)
+    logger.debug("Execute: " + query)
 
     timer = TimeoutScheduler.schedule(
       Config.get('sql_timeout).toInt, this)
@@ -47,11 +48,11 @@ class SQLQuery(query_str: String) extends TimeoutCallback {
 
     val runtime_millis = qtime / 1000000.0
     Statistics.incr('sql_request_time_mean, runtime_millis)
-    Logger.debug("Finished (" + runtime_millis + "ms): " + query)
+    logger.debug("Finished (" + runtime_millis + "ms): " + query)
 
     if (Config.has_key('log_slow_queries) &&
         runtime_millis >= Config.get('log_slow_queries).toInt) {
-      Logger.log("[SQL] [Slow Query] (" + runtime_millis + "ms): " + query)
+      logger.info("[SQL] [Slow Query] (" + runtime_millis + "ms): " + query)
     }
   }
 
