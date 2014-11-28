@@ -7,7 +7,9 @@
 
 package com.paulasmuth.sqltap.mysql
 
-import com.paulasmuth.sqltap.{Logger,ExecutionException,Statistics,TimeoutScheduler,TimeoutCallback}
+import com.paulasmuth.sqltap.callbackhell.{TimeoutCallback, TimeoutScheduler}
+import com.paulasmuth.sqltap.stats.Statistics
+import com.paulasmuth.sqltap.{Logger,ExecutionException}
 import scala.collection.mutable.{ListBuffer,HashMap}
 import java.nio.channels.{SocketChannel,SelectionKey}
 import java.nio.{ByteBuffer,ByteOrder}

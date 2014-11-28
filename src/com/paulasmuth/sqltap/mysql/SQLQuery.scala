@@ -7,6 +7,8 @@
 package com.paulasmuth.sqltap.mysql
 
 import com.paulasmuth.sqltap._
+import com.paulasmuth.sqltap.callbackhell.{ReadyCallback, Timeout, TimeoutCallback, TimeoutScheduler}
+import com.paulasmuth.sqltap.stats.Statistics
 import scala.collection.mutable.ListBuffer
 
 class SQLQuery(query_str: String) extends TimeoutCallback {

@@ -9,6 +9,11 @@ package com.paulasmuth.sqltap
 
 import java.io.File
 
+import com.paulasmuth.sqltap.callbackhell.ExpirationHandlerFactory
+import com.paulasmuth.sqltap.http.Server
+import com.paulasmuth.sqltap.sqlmapping.RelationTrace
+import com.paulasmuth.sqltap.stats.Statistics
+
 // TODO
 //   > todo: use object pool for ByteBuffer.allocate slabs in ElasticBuffer
 //   > bug: pin.findAllWhere(%22submitter_id%20=%206052621%22,%2010){pinable_id,product.findOne{*}}
@@ -111,8 +116,8 @@ object SQLTap{
     Logger.log("sqltapd " + VERSION + " booting...")
 
     Statistics.update_async()
-    Manifest.load(new File(Config.get('config_base)))
-    RelationTrace.load(Manifest.resources)
+    sqlmapping.Manifest.load(new File(Config.get('config_base)))
+    RelationTrace.load(sqlmapping.Manifest.resources)
     ExpirationHandlerFactory.configure(Config.get('expiration_handler))
 
     val server = new Server(Config.get('threads).toInt)

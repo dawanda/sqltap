@@ -7,6 +7,9 @@
 
 package com.paulasmuth.sqltap
 
+import com.paulasmuth.sqltap.callbackhell.Worker
+import com.paulasmuth.sqltap.http.Server
+
 class Watchdog(base: Server) {
 
   val max_error_rate = 0.3

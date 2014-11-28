@@ -7,7 +7,8 @@
 
 package com.paulasmuth.sqltap.mysql
 
-import com.paulasmuth.sqltap.{Logger,TemporaryException,Statistics}
+import com.paulasmuth.sqltap.stats.Statistics
+import com.paulasmuth.sqltap.{Logger,TemporaryException}
 import java.nio.channels.{Selector}
 import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.HashMap
