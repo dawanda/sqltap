@@ -86,7 +86,7 @@ class JSONWriter(buf: WrappedBuffer) {
         buf.write(Array(0x5C.toByte, 0x22.toByte)) // \"
       } else if (b == 0x5C) {
         buf.write(Array(0x5C.toByte, 0x5C.toByte)) // \\
-      } else if ((b == 0) || ((b >= 0x20))) {
+      } else if (b >= 0x20) {
         buf.write(byte)
       }
     }
