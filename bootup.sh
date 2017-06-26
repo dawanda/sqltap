@@ -50,6 +50,11 @@ opts="$opts -t ${SQLTAP_THREADS}"
 opts="$opts --mysql-host ${MYSQL_HOST}"
 opts="$opts --mysql-port ${MYSQL_PORT}"
 opts="$opts --mysql-user ${MYSQL_USER}"
+
+if [[ "x${MYSQL_PASSWORD}" != "x" ]]; then
+  opts="$opts --mysql-password ${MYSQL_PASSWORD}"
+fi
+
 opts="$opts --mysql-database ${MYSQL_DATABASE}"
 opts="$opts --mysql-numconns ${MYSQL_NUMCONNS}"
 opts="$opts --mysql-queuelen ${MYSQL_QUEUELEN}"
