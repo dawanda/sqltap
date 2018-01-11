@@ -27,6 +27,7 @@ trait RowsBinlogEvent extends BinlogEvent {
       case 0x0c => read_date(8)               // 0x0c DATETIME
       case 0x0d => read_date(1)               // 0x0d YEAR
       case 0x0f => read_varchar(meta)         // 0x0f VARCHAR
+      case 0xfe => read_int(8).toString       // 0xef CHAR
       case c: Byte => {
         throw new Exception("unknown mysql column type: " + c.toString)
       }
