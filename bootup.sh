@@ -3,8 +3,8 @@ set -e
 
 SQLTAP_JARFILE="/usr/lib/sqltap.jar"
 
-if [[ "$SCHEMA_URL" != "" ]]; then
-  curl -sL "$SCHEMA_URL" -o "${SQLTAP_SCHEMA}"
+if [[ $SCHEMA_URL == http* ]]; then
+  curl -sL $SCHEMA_URL -o "${SQLTAP_SCHEMA}"
 fi
 
 require_arg() {
