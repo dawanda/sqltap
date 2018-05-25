@@ -42,7 +42,7 @@ object LengthEncodedString {
       throw new SQLProtocolError("length encoded string too large!")
 
     else
-      throw new SQLProtocolError("invalid length encoded string")
+      throw new SQLProtocolError("invalid length encoded string. pos: " + pos + ", type: " + (data(pos) & 0x000000ff))
 
     val string = new String(data, offset, length, "UTF-8")
 
