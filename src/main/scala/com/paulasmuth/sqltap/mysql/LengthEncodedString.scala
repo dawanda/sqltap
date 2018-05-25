@@ -31,6 +31,13 @@ object LengthEncodedString {
       offset += 4
     }
 
+    else if ((data(0) & 0x000000ff) == 0xfa) {
+      length += (data(pos + 1) & 0x000000ff)
+      length += (data(pos + 2) & 0x000000ff) << 8
+      length += (data(pos + 3) & 0x000000ff) << 16
+      offset += 4
+    }
+
     else if ((data(0) & 0x000000ff) == 0xfe && data.size == 9)
       throw new SQLProtocolError("length encoded string too large!")
 
