@@ -19,7 +19,7 @@ import java.io.File
 
 object SQLTap{
 
-  val VERSION = "v0.8.0"
+  val VERSION = "v0.8.6"
 
   def main(args: Array[String]) : Unit = {
     var n = 0
