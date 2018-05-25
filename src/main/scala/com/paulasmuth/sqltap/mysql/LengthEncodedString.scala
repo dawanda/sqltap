@@ -24,14 +24,7 @@ object LengthEncodedString {
       offset += 3
     }
 
-    else if ((data(0) & 0x000000ff) == 0xfd) {
-      length += (data(pos + 1) & 0x000000ff)
-      length += (data(pos + 2) & 0x000000ff) << 8
-      length += (data(pos + 3) & 0x000000ff) << 16
-      offset += 4
-    }
-
-    else if ((data(pos) & 0x000000ff) == 0xfa) {
+    else if ((data(pos) & 0x000000ff) == 0xfd) {
       length += (data(pos + 1) & 0x000000ff)
       length += (data(pos + 2) & 0x000000ff) << 8
       length += (data(pos + 3) & 0x000000ff) << 16
